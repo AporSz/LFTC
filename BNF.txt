@@ -1,0 +1,39 @@
+<program> ::= <statement> | <statement> <program> | epsilon
+<statement> ::= <init> | <load> | <assign> | <save> | <if> | <for> | <function> | <return>
+<statements> ::= <statement> <statements> | epsilon
+<init> ::= "image" <id> "[" <number> "," <number> "]" | "array" <id> "[" <number> "]" | "pixel" <id> "[" <number> "," <number> "," <number> "," <number> "]" | "pixel" <id> "[" <number> "," <number> "," <number> "]"
+<load> ::= "load" "(" <id> "," <string> ")"
+<save> ::= "save" "(" <id> "," <string> ")"
+<assign> ::= <id> "=" <expression> | <id> "[" <number> "]" "=" <expression> | <id> "[" <number> "]" "[" <number> "]" "=" <expression>
+<if> ::= "if" <condition> "{" <statements> "}" "else" "{" <statements> "}" | "if" <condition> "{" <statements> "}"
+<for> ::= "for" <var> "in" <id> "{" <statements> "}"
+<expression> ::= <term> | <expression> <operator> <term>
+<term> ::= <number> | <id> | <function_call> | <id> "[" <number> "]" | <id> "[" <number> "]" "[" <number> "]"
+<condition> ::= <expr>
+<expr> ::= <var> | <function_call> | <expr> <logical_op> <expr> | <expression> <comp_op> <expression>
+<identifier> ::= <letter> | <letter> <ident_rest>
+<ident_rest> ::= <letter> | <digit> | <letter> <ident_rest> | <digit> <ident_rest> | epsilon
+<id> ::= <identifier>
+<var> ::= <identifier>
+<operator> ::= "+" | "-" | "*"
+<comp_op> ::= "==" | "!=" | "<" | "<=" | ">" | ">="
+<logical_op> ::= "and" | "or" | "&&" | "||"
+<string> ::= """ <string_content> """
+<string_content> ::= <character> | <character> <string_content>
+<character> ::= <digit> | <letter> | "_" | "." | "/"
+<number> ::= "0" | <nonzero_digit> <digits_opt>
+<digits_opt> ::= <digit> | <digit> <digits_opt> | epsilon
+<nonzero_digit> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<letter> ::= "a" | "b" | … | "z" | "A" | "B" | … | "Z"
+
+<function_call> ::= <identifier> "(" <arguments_opt> ")"
+<arguments_opt> ::= <arguments> | epsilon
+<arguments> ::= <expression> <arguments_tail>
+<arguments_tail> ::= "," <expression> <arguments_tail> | epsilon
+<function> ::= "function" <identifier> "(" <parameter_opt> ")" "{" <statements> <return> "}"
+<parameter_opt> ::= <parameters> | epsilon
+<parameters> ::= <parameter> <parameter_tail>
+<parameter_tail> ::= "," <parameter> <parameter_tail> | epsilon
+<parameter> ::= <identifier>
+<return> ::= "return" <expression> | "return" <expr> | "return void"

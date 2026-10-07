@@ -1,0 +1,30 @@
+Image processing language
+
+This DSL allows for the processing of images (which are considered to be matrices of pixels) with operators and functions.
+
+Images are a 2D array of Pixels. Each pixel is represented by 4 numbers: R G B A. If only 3 numbers are provided, A = 255. R G B A are numbers
+between 0 and 255 and represent the pixel according to the RGBA model. Arrays are just one dimensional lists.
+
+Images can be loaded from and saved to specific files. You can load the image "jpg.png" to variable "img" with: "load(img, "jpg.png")".
+It works the same way with saving an image.
+
+You can initialize an image with "image img[1080, 1920]". The language supports if statements with logical ("and" and "or") operators and you
+can optionally have an "else" block too. You can also iterate through lists or matrices with "for". The language supports the definition of
+functions with 0 or more parameters. The programming language also allows you to read the values from desired indexes of images or arrays with
+"arr[2]" or "arr[2][3]". You can also write to those locations in a similar manner.
+
+Code example:
+
+image img[1080, 1920]
+load(img, "jpg.png")
+for row in img {
+    for pix in row {
+        if pix > 128 {
+            pix = 255
+        }
+        else {
+            pix = 0
+        }
+    }
+}
+save(img, "png.jpg")
