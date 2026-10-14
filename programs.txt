@@ -21,33 +21,33 @@ function verifyPixel(pix)
     {
         pix[0] = 255
     }
-    if pix[1] < 0
+    if pix[0] < 0
     {
         pix[0] = 0
     }
     if pix[1] > 255
     {
-        pix[0] = 255
+        pix[1] = 255
     }
     if pix[1] < 0
     {
-        pix[0] = 0
+        pix[1] = 0
     }
     if pix[2] > 255
     {
-        pix[0] = 255
+        pix[2] = 255
     }
     if pix[2] < 0
     {
-        pix[0] = 0
+        pix[2] = 0
     }
     if pix[3] > 255
     {
-        pix[0] = 255
+        pix[3] = 255
     }
     if pix[3] < 0
     {
-        pix[0] = 0
+        pix[3] = 0
     }
 }
 
