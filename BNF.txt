@@ -1,39 +1,84 @@
-<program> ::= <statement> | <statement> <program> | epsilon
-<statement> ::= <init> | <load> | <assign> | <save> | <if> | <for> | <function> | <return>
-<statements> ::= <statement> <statements> | epsilon
-<init> ::= "image" <id> "[" <number> "," <number> "]" | "array" <id> "[" <number> "]" | "pixel" <id> "[" <number> "," <number> "," <number> "," <number> "]" | "pixel" <id> "[" <number> "," <number> "," <number> "]"
-<load> ::= "load" "(" <id> "," <string> ")"
-<save> ::= "save" "(" <id> "," <string> ")"
-<assign> ::= <id> "=" <expression> | <id> "[" <number> "]" "=" <expression> | <id> "[" <number> "]" "[" <number> "]" "=" <expression>
-<if> ::= "if" <condition> "{" <statements> "}" "else" "{" <statements> "}" | "if" <condition> "{" <statements> "}"
-<for> ::= "for" <var> "in" <id> "{" <statements> "}"
-<expression> ::= <term> | <expression> <operator> <term>
-<term> ::= <number> | <id> | <function_call> | <id> "[" <number> "]" | <id> "[" <number> "]" "[" <number> "]"
-<condition> ::= <expr>
-<expr> ::= <var> | <function_call> | <expr> <logical_op> <expr> | <expression> <comp_op> <expression>
-<identifier> ::= <letter> | <letter> <ident_rest>
-<ident_rest> ::= <letter> | <digit> | <letter> <ident_rest> | <digit> <ident_rest> | epsilon
-<id> ::= <identifier>
-<var> ::= <identifier>
-<operator> ::= "+" | "-" | "*"
-<comp_op> ::= "==" | "!=" | "<" | "<=" | ">" | ">="
-<logical_op> ::= "and" | "or" | "&&" | "||"
-<string> ::= """ <string_content> """
-<string_content> ::= <character> | <character> <string_content>
-<character> ::= <digit> | <letter> | "_" | "." | "/"
-<number> ::= "0" | <nonzero_digit> <digits_opt>
-<digits_opt> ::= <digit> | <digit> <digits_opt> | epsilon
-<nonzero_digit> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-<letter> ::= "a" | "b" | … | "z" | "A" | "B" | … | "Z"
+--- UPDATED BNF GRAMMAR (after GenAI validation) ---
+Changes from original are marked with (* CHANGED *) or (* NEW *)
 
-<function_call> ::= <identifier> "(" <arguments_opt> ")"
-<arguments_opt> ::= <arguments> | epsilon
-<arguments> ::= <expression> <arguments_tail>
-<arguments_tail> ::= "," <expression> <arguments_tail> | epsilon
-<function> ::= "function" <identifier> "(" <parameter_opt> ")" "{" <statements> <return> "}"
-<parameter_opt> ::= <parameters> | epsilon
-<parameters> ::= <parameter> <parameter_tail>
-<parameter_tail> ::= "," <parameter> <parameter_tail> | epsilon
-<parameter> ::= <identifier>
-<return> ::= "return" <expression> | "return" <expr> | "return void"
+<program>         ::= <statements>                                    (* CHANGED: was duplicate of <statements> *)
+
+<statements>      ::= <statement> <statements> | epsilon
+
+<statement>       ::= <init> | <load> | <assign> | <save>
+                    | <if> | <for> | <function> | <return>
+
+<init>            ::= "image" <id> "[" <index> "," <index> "]"       (* CHANGED: number -> index *)
+                    | "array" <id> "[" <index> "]"                   (* CHANGED: number -> index *)
+                    | "pixel" <id> "[" <index> "," <index> "," <index> "," <index> "]"   (* CHANGED *)
+                    | "pixel" <id> "[" <index> "," <index> "," <index> "]"               (* CHANGED *)
+
+<load>            ::= "load" "(" <id> "," <string> ")"
+<save>            ::= "save" "(" <id> "," <string> ")"
+
+<assign>          ::= <id> "=" <expression>
+                    | <id> "[" <index> "]" "=" <expression>          (* CHANGED: number -> index *)
+                    | <id> "[" <index> "]" "[" <index> "]" "=" <expression>  (* CHANGED *)
+
+<if>              ::= "if" <expr> "{" <statements> "}" "else" "{" <statements> "}"  (* CHANGED: condition -> expr *)
+                    | "if" <expr> "{" <statements> "}"                               (* CHANGED: condition -> expr *)
+
+<for>             ::= "for" <id> "in" <id> "{" <statements> "}"     (* CHANGED: var -> id *)
+                    | "for" <id> "in" <size> "{" <statements> "}"   (* NEW: added size alternative *)
+
+<expression>      ::= <term> <expression_tail>                       (* CHANGED: eliminated left-recursion *)
+<expression_tail> ::= <operator> <term> <expression_tail> | epsilon (* NEW *)
+
+<term>            ::= <number>
+                    | <id>
+                    | <function_call>
+                    | <id> "[" <index> "]"                           (* CHANGED: number -> index *)
+                    | <id> "[" <index> "]" "[" <index> "]"          (* CHANGED: number -> index *)
+
+<expr>            ::= <expr_base> <expr_tail>                        (* CHANGED: eliminated left-recursion *)
+<expr_base>       ::= <id>                                           (* NEW *)
+                    | <function_call>
+                    | <expression> <comp_op> <expression>
+<expr_tail>       ::= <logical_op> <expr_base> <expr_tail> | epsilon (* NEW *)
+
+<identifier>      ::= <letter> <ident_rest>                          (* CHANGED: unified *)
+<ident_rest>      ::= <letter> <ident_rest> | <digit> <ident_rest> | epsilon (* CHANGED: simplified *)
+
+<id>              ::= <identifier>
+<index>           ::= <number> | <id> | <size>                       (* NEW *)
+<size>            ::= <id> ".size"                                   (* CHANGED: was unreferenced, now used *)
+
+<operator>        ::= "+" | "-" | "*" | "/"                         (* CHANGED: added "/" *)
+<comp_op>         ::= "==" | "!=" | "<" | "<=" | ">" | ">="
+<logical_op>      ::= "and" | "or" | "&&" | "||"
+
+<string>          ::= """ <string_content> """
+<string_content>  ::= <character> <string_content> | epsilon        (* CHANGED: added epsilon for empty strings *)
+<character>       ::= <digit> | <letter> | "_" | "." | "/"
+
+<number>          ::= "0" | <nonzero_digit> <digits_opt>
+<digits_opt>      ::= <digit> <digits_opt> | epsilon                (* CHANGED: simplified *)
+<nonzero_digit>   ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<digit>           ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<letter>          ::= "a" | "b" | … | "z" | "A" | "B" | … | "Z"
+
+<function_call>   ::= <identifier> "(" <arguments_opt> ")"
+<arguments_opt>   ::= <arguments> | epsilon
+<arguments>       ::= <expression> <arguments_tail>
+<arguments_tail>  ::= "," <expression> <arguments_tail> | epsilon
+
+<function>        ::= "function" <identifier> "(" <parameter_opt> ")"
+                      "{" <statements> <return_opt> "}"             (* CHANGED: return -> return_opt *)
+<return_opt>      ::= <return> | epsilon                            (* NEW *)
+<return>          ::= "return" <expression>
+                    | "return" <expr>
+                    | "return" "void"                               (* CHANGED: was "return void" as one token *)
+
+<parameter_opt>   ::= <parameters> | epsilon
+<parameters>      ::= <parameter> <parameter_tail>
+<parameter_tail>  ::= "," <parameter> <parameter_tail> | epsilon
+<parameter>       ::= <identifier>
+
+--- REMOVED RULES ---
+<var>       (was identical to <id>; replaced with <id> throughout)
+<condition> (was trivial alias for <expr>; replaced with <expr> in <if>)

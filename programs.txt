@@ -1,0 +1,77 @@
+PROGRAM 1:
+
+function add (img1, img2, n, m)
+{
+    image img[n, m]
+    for i in n
+    {
+        for j in m
+        {
+            p = img1[i][j] + img2[i][j]
+            p = correctPixel(p)
+            img[i][j] = p
+        }
+    }
+    return img
+}
+
+function verifyPixel(pix)
+{
+    if pix[0] > 255
+    {
+        pix[0] = 255
+    }
+    if pix[1] < 0
+    {
+        pix[0] = 0
+    }
+    if pix[1] > 255
+    {
+        pix[0] = 255
+    }
+    if pix[1] < 0
+    {
+        pix[0] = 0
+    }
+    if pix[2] > 255
+    {
+        pix[0] = 255
+    }
+    if pix[2] < 0
+    {
+        pix[0] = 0
+    }
+    if pix[3] > 255
+    {
+        pix[0] = 255
+    }
+    if pix[3] < 0
+    {
+        pix[0] = 0
+    }
+}
+
+n = 100
+m = 100
+
+image img1[n, m]
+image img2[n, m]
+
+img = add(img1, img2, n, m)
+save(img, "jpg.png")
+
+PROGRAM 2:
+
+image img[1080, 1920]
+load(img, "jpg.png")
+for row in img {
+    pixel p [0, 0, 0, 0]
+    p = row[0]
+    array a [row.size]
+    for i in a.size
+    {
+        a[i] = p
+    }
+    row = a
+}
+save(img, "png.jpg")
