@@ -1,6 +1,8 @@
 --- UPDATED BNF GRAMMAR (after GenAI validation) ---
 Changes from original are marked with (* CHANGED *) or (* NEW *)
 
+--- SYNTACTIC DEFINITIONS ---
+
 <program>         ::= <statements>                                    (* CHANGED: was duplicate of <statements> *)
 
 <statements>      ::= <statement> <statements> | epsilon
@@ -41,26 +43,8 @@ Changes from original are marked with (* CHANGED *) or (* NEW *)
                     | <expression> <comp_op> <expression>
 <expr_tail>       ::= <logical_op> <expr_base> <expr_tail> | epsilon (* NEW *)
 
-<identifier>      ::= <letter> <ident_rest>                          (* CHANGED: unified *)
-<ident_rest>      ::= <letter> <ident_rest> | <digit> <ident_rest> | epsilon (* CHANGED: simplified *)
-
-<id>              ::= <identifier>
 <index>           ::= <number> | <id> | <size>                       (* NEW *)
 <size>            ::= <id> ".size"                                   (* CHANGED: was unreferenced, now used *)
-
-<operator>        ::= "+" | "-" | "*" | "/"                         (* CHANGED: added "/" *)
-<comp_op>         ::= "==" | "!=" | "<" | "<=" | ">" | ">="
-<logical_op>      ::= "and" | "or" | "&&" | "||"
-
-<string>          ::= """ <string_content> """
-<string_content>  ::= <character> <string_content> | epsilon        (* CHANGED: added epsilon for empty strings *)
-<character>       ::= <digit> | <letter> | "_" | "." | "/"
-
-<number>          ::= "0" | <nonzero_digit> <digits_opt>
-<digits_opt>      ::= <digit> <digits_opt> | epsilon                (* CHANGED: simplified *)
-<nonzero_digit>   ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-<digit>           ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-<letter>          ::= "a" | "b" | … | "z" | "A" | "B" | … | "Z"
 
 <function_call>   ::= <identifier> "(" <arguments_opt> ")"
 <arguments_opt>   ::= <arguments> | epsilon
@@ -78,6 +62,26 @@ Changes from original are marked with (* CHANGED *) or (* NEW *)
 <parameters>      ::= <parameter> <parameter_tail>
 <parameter_tail>  ::= "," <parameter> <parameter_tail> | epsilon
 <parameter>       ::= <identifier>
+
+--- LEXICAL DEFINITIONS ---
+
+<identifier>      ::= <letter> <ident_rest>                          (* CHANGED: unified *)
+<ident_rest>      ::= <letter> <ident_rest> | <digit> <ident_rest> | epsilon (* CHANGED: simplified *)
+<id>              ::= <identifier>
+
+<operator>        ::= "+" | "-" | "*" | "/"                         (* CHANGED: added "/" *)
+<comp_op>         ::= "==" | "!=" | "<" | "<=" | ">" | ">="
+<logical_op>      ::= "and" | "or" | "&&" | "||"
+
+<string>          ::= """ <string_content> """
+<string_content>  ::= <character> <string_content> | epsilon        (* CHANGED: added epsilon for empty strings *)
+<character>       ::= <digit> | <letter> | "_" | "." | "/" | etc.
+
+<number>          ::= "0" | <nonzero_digit> <digits_opt>
+<digits_opt>      ::= <digit> <digits_opt> | epsilon                (* CHANGED: simplified *)
+<nonzero_digit>   ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<digit>           ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<letter>          ::= "a" | "b" | … | "z" | "A" | "B" | … | "Z"
 
 --- REMOVED RULES ---
 <var>       (was identical to <id>; replaced with <id> throughout)
