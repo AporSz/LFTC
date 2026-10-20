@@ -37,3 +37,4 @@
 <parameter_tail> ::= "," <parameter> <parameter_tail> | epsilon
 <parameter> ::= <identifier>
 <return> ::= "return" <expression> | "return" <expr> | "return void"
+<size> ::= <identifier> ".size"
