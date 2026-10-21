@@ -1,0 +1,113 @@
+Lab 3 - Lexical Analysis
+=======================
+
+Purpose
+-------
+
+This program performs lexical analysis for the domain-specific language
+described in the Lab 1 BNF. It uses Flex (the lex-compatible scanner
+generator) to recognize source tokens. It writes a Symbol Table (ST) and a
+Program Internal Form (PIF) to output.txt. Characters that do not match a
+token rule are reported as lexical errors.
+
+Tools and how to run
+--------------------
+
+The lexer specification is lexer.l. The Symbol Table implementation and
+table-output functions are in tables.c, with declarations in tables.h.
+Flex generates C source from lexer.l; GCC compiles that source together with
+tables.c and links the Flex runtime.
+
+From the hw3 directory, generate and compile the scanner:
+
+    lex lexer.l
+    gcc -std=gnu11 -I. lex.yy.c tables.c -lfl -o my_lex
+
+Run it with a source file as the first argument:
+
+    ./my_lex source.txt
+
+The scanner writes the tables to output.txt in the current directory.
+
+Lexical token detection
+-----------------------
+
+The named regular-expression definitions in lexer.l describe the main token
+classes:
+
+  Token class          Pattern or examples
+  -------------------  -----------------------------------------------
+  Operators            +, -, *, /
+  Comparison operators ==, !=, <, <=, >, >=
+  Logical operators    and, or, &&, ||
+  Number constants     0 or a non-zero digit followed by digits
+  Identifiers          a letter followed by zero or more letters or digits
+  Strings              a double quote, any non-quote/non-newline contents,
+                       and a closing double quote
+  Reserved words       image, array, pixel, load, save, if, else, for, in,
+                       function, return, void, size
+  Assignment           =
+  Separators           parentheses, square brackets, commas, and braces
+  Size suffix          .size
+
+Flex applies its longest-match rule when multiple patterns could match the
+same source text. For equal-length matches, the earlier rule in lexer.l wins;
+the reserved-word rule is before the identifier rule so reserved words are
+not recorded as identifiers.
+
+Spaces, tabs, and newlines are ignored. A character that matches no defined
+token rule is printed as an unrecognized character and is not added to the
+PIF or ST.
+
+Identifiers and constants
+--------------------------
+
+An identifier must begin with an ASCII letter. Subsequent characters can be
+ASCII letters or digits. A number is either exactly 0 or begins with 1-9 and
+may be followed by more digits; for example, 0 and 45 match, while 045 does
+not match as one number token.
+
+Strings are stored with their surrounding quotation marks because those
+characters are part of the matched lexeme. The lexer copies each matched
+lexeme into memory before Flex reuses its input buffer.
+
+Identifiers, number constants, and string constants are inserted into the
+Symbol Table. The associated value records the kind of entry ("id",
+"number", or "string"). Other tokens are recorded in the PIF with index -1.
+For identifier and constant PIF entries, the index currently stores the
+bucket number returned by the hash table's put operation.
+
+Symbol Table data structure and operations
+------------------------------------------
+
+The ST is implemented in C in tables.c as a hash table with separate
+chaining:
+
+  - A bucket array holds pointers to linked-list heads.
+  - Each list node contains a key/value pair and a pointer to the next node.
+  - The key is the lexeme; the value is its recorded token kind.
+  - The hash function processes the key characters and reduces the result
+    modulo the current table size to select a bucket.
+  - Colliding keys are stored in the same bucket's linked list.
+
+The table operations are:
+
+  - initHashTable allocates and initializes a table.
+  - get searches a bucket chain for a key and returns its value.
+  - put adds a new key/value pair or updates the value for an existing key.
+    It grows and rehashes the table when insertion would take the load factor
+    above 0.75. Its return value is the bucket number, or -1 on failure.
+  - resizeHashTable explicitly changes the bucket count and rehashes entries.
+  - removeKey deletes a matching key and updates the entry count.
+  - destroyHashTable frees the table and its entries.
+
+PIF representation and output
+-----------------------------
+
+Each PIF entry contains a token category, an index, and the matched token
+text. The output file contains two labeled sections:
+
+  - SYMBOL TABLE: bucket number, lexeme, and recorded type.
+  - PIF TABLE: token position, category, index, and token text.
+
+The PIF is currently a fixed-size array with a capacity of 1000 entries.
