@@ -75,7 +75,7 @@ Changes from original are marked with (* CHANGED *) or (* NEW *)
 
 <string>          ::= """ <string_content> """
 <string_content>  ::= <character> <string_content> | epsilon        (* CHANGED: added epsilon for empty strings *)
-<character>       ::= <digit> | <letter> | "_" | "." | "/" | etc.
+<character>       ::= <digit> | <letter> | "_" | "." | "/" | etc.   (* etc. means other special characters *)
 
 <number>          ::= "0" | <nonzero_digit> <digits_opt>
 <digits_opt>      ::= <digit> <digits_opt> | epsilon                (* CHANGED: simplified *)
