@@ -59,7 +59,7 @@ static int write_csv_field(FILE *file, const char *value) {
 static int write_symbol_table(FILE *file, const struct HashTable *table) {
     int result = 0;
     if (fputs("SYMBOL TABLE\n", file) == EOF ||
-        fputs("\"Key\",\"Value\"\n", file) == EOF) {
+        fputs("Bucket\tLexeme\tType\n", file) == EOF) {
         return -1;
     }
 
@@ -68,10 +68,8 @@ static int write_symbol_table(FILE *file, const struct HashTable *table) {
              entry != NULL;
              entry = entry->next) {
             if (entry->entry.key == NULL || entry->entry.value == NULL ||
-                write_csv_field(file, entry->entry.key) != 0 ||
-                fputc(',', file) == EOF ||
-                write_csv_field(file, entry->entry.value) != 0 ||
-                fputc('\n', file) == EOF) {
+                fprintf(file, "%d\t%s\t%s\n", i, entry->entry.key,
+                        entry->entry.value) < 0) {
                 result = -1;
                 break;
             }
