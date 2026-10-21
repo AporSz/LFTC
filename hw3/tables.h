@@ -36,6 +36,7 @@ int put(struct HashTable *table, const char *key, const char *value);
 int resizeHashTable(struct HashTable *table, int new_size);
 int removeKey(struct HashTable *table, const char *key);
 int writeTables(const struct HashTable *table, const char *filename);
+char *concatStrings(const char *first, const char *second);
 
 extern struct triple pif[1000];
 extern int pif_index;

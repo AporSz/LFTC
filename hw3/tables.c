@@ -18,6 +18,27 @@ static char *copy_string(const char *str) {
     return copy;
 }
 
+char *concatStrings(const char *first, const char *second) {
+    if (first == NULL || second == NULL) {
+        return NULL;
+    }
+
+    size_t first_length = strlen(first);
+    size_t second_length = strlen(second);
+    if (first_length > SIZE_MAX - second_length - 1) {
+        return NULL;
+    }
+
+    char *result = malloc(first_length + second_length + 1);
+    if (result == NULL) {
+        return NULL;
+    }
+
+    memcpy(result, first, first_length);
+    memcpy(result + first_length, second, second_length + 1);
+    return result;
+}
+
 static int write_csv_field(FILE *file, const char *value) {
     if (fputc('"', file) == EOF) {
         return -1;
