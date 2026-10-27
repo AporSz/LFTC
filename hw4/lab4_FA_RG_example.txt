@@ -1,0 +1,134 @@
+================================================================================
+LABORATORY WORK 4: FINITE AUTOMATA AND REGULAR GRAMMARS FOR IoT-Script
+================================================================================
+
+1. INTRODUCTION & OBJECTIVES
+--------------------------------------------------------------------------------
+The objective of this laboratory work is to formalize the lexical tokens of our 
+domain-specific language (`IoT-Script`) using formal language theory. Specifically, 
+we define Identifiers and Constants using Finite Automata (FA) and Regular 
+Grammars (RG), and implement an automated algorithm to transform an FA into an RG.
+
+--------------------------------------------------------------------------------
+2. FORMAL DEFINITIONS (REQUIREMENT 1)
+--------------------------------------------------------------------------------
+
+2.1 IDENTIFIERS ([a-zA-Z_][a-zA-Z0-9_]*)
+--------------------------------------------------------------------------------
+BNF: 
+<identifier>        ::= <letter> | <identifier> <letter> | <identifier> <digit>
+<letter>            ::= "a" | "b" | "c" | ... | "z" | "A" | "B" | ... | "Z" | "_"
+<digit>             ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+
+Finite Automaton (FA) Definition: M = (Q, Sigma, delta, q0, F)
+- Q (States)         = {q0, q1}
+- Sigma (Alphabet)   = {a-z, A-Z, 0-9, _}
+- q0 (Start State)   = q0
+- F (Final States)   = {q1}
+- delta (Transitions):
+  * delta(q0, letter_or_underscore) = q1
+  * delta(q1, letter_or_digit_or_underscore) = q1
+
+       +---------------------------------------------+
+       |                                             |
+       v                                             |
++--------------+     letter / '_'    +-----------------------------------+
+|   State q0   | ------------------> |      State q1 (Accepting)         |
+| (Start State)|                     | (Valid Identifier So Far)         |
++--------------+                     +-----------------------------------+
+                                             |			    ^
+                                             |letter / digit / '_'  |  
+                                             +----------------------
+
+Regular Grammar (RG) Definition: G = (N, Sigma, P, S)
+- N (Non-terminals)  = {S, A}
+- Sigma (Alphabet)   = {a-z, A-Z, 0-9, _}
+- S (Start Symbol)   = S
+- P (Production Rules):
+  * S -> letter A
+  * S -> underscore A
+  * S -> letter
+  * S -> underscore
+  * A -> letter A
+  * A -> digit A
+  * A -> underscore A
+  * A -> letter
+  * A -> digit
+  * A -> underscore
+
+
+2.2 CONSTANTS ([0-9]+)
+--------------------------------------------------------------------------------
+Finite Automaton (FA) Definition: M = (Q, Sigma, delta, q0, F)
+- Q (States)         = {p0, p1}
+- Sigma (Alphabet)   = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+- q0 (Start State)   = p0
+- F (Final States)   = {p1}
+- delta (Transitions):
+  * delta(p0, digit) = p1
+  * delta(p1, digit) = p1
+
+Regular Grammar (RG) Definition: G = (N, Sigma, P, S)
+- N (Non-terminals)  = {S, B}
+- S (Start Symbol)   = S
+- P (Production Rules):
+  * S -> digit B
+  * S -> digit
+  * B -> digit B
+  * B -> digit
+
+--------------------------------------------------------------------------------
+3. FA TO RG TRANSFORMATION ALGORITHM & IMPLEMENTATION (REQUIREMENT 2)
+--------------------------------------------------------------------------------
+To convert an FA into an equivalent Regular Grammar programmatically:
+1. Every state Q_i in the FA maps to a Non-terminal in the grammar.
+2. A transition delta(Q_i, symbol) = Q_j generates the rule: Q_i -> symbol Q_j.
+3. If Q_j is a final state, a terminating rule Q_i -> symbol is also added.
+
+Python Source Code Implementation:
+--------------------------------------------------------------------------------
+
+class FiniteAutomaton:
+    def __init__(self):
+        self.states = {"q0", "q1"}
+        self.start_state = "q0"
+        self.final_states = {"q1"}
+        self.transitions = {}
+
+    def add_transition(self, from_state, symbol_class, to_state):
+        if from_state not in self.transitions:
+            self.transitions[from_state] = []
+        self.transitions[from_state].append((symbol_class, to_state))
+
+
+def convert_fa_to_rg(fa: FiniteAutomaton):
+    productions = []
+    state_to_nt = {"q0": "S", "q1": "A"}
+
+    for state, trans_list in fa.transitions.items():
+        lhs = state_to_nt[state]
+        for symbol_class, target_state in trans_list:
+            rhs_nt = state_to_nt[target_state]
+            productions.append(f"{lhs} -> {symbol_class} {rhs_nt}")
+            if target_state in fa.final_states:
+                productions.append(f"{lhs} -> {symbol_class}")
+
+    return productions
+
+
+if __name__ == "__main__":
+    fa = FiniteAutomaton()
+    fa.add_transition("q0", "letter_or_underscore", "q1")
+    fa.add_transition("q1", "char_or_digit", "q1")
+
+    print("=== FINITE AUTOMATON (FA) MODEL ===")
+    print(f"States: {fa.states}")
+    print(f"Start State: {fa.start_state}")
+    print(f"Final States: {fa.final_states}")
+
+    print("\n=== GENERATED REGULAR GRAMMAR (RG) PRODUCTIONS ===")
+    rg_productions = convert_fa_to_rg(fa)
+    for prod in rg_productions:
+        print(prod)
+================================================================================
