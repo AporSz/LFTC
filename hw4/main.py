@@ -25,6 +25,37 @@ def convert_fa_to_rg(fa: FiniteAutomaton):
 
     return productions
 
+identifiers = {
+    "states": ["q0", "q1"],
+    "start_state": "q0",
+    "final_states": ["q1"],
+    "transitions": {
+        ("q0", "letter", "q1"),
+        ("q1", "letter_or_digit", "q1"),
+    }
+}
+
+numbers = {
+    "states": ["q0", "q1", "q2"],
+    "start_state": "q0",
+    "final_states": ["q1", "q2"],
+    "transitions": {
+        ("q0", "zero", "q1"),
+        ("q0", "nonzero", "q2"),
+        ("q2", "digit", "q2"),
+    }
+}
+
+string = {
+    "states": ["q0", "q1", "q2"],
+    "start_state": "q0",
+    "final_states": ["q1", "q2"],
+    "transitions": {
+        ("q0", "zero", "q1"),
+        ("q0", "nonzero", "q2"),
+        ("q2", "digit", "q2"),
+    }
+}
 
 if __name__ == "__main__":
     fa = FiniteAutomaton()

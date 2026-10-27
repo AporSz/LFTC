@@ -1,7 +1,6 @@
 <identifier>      ::= <letter> <ident_rest>
 <ident_rest>      ::= <letter> <ident_rest> | <digit> <ident_rest> | epsilon
 
-<constant>        ::= <string> | <number>
 <string>          ::= """ <string_content> """
 <string_content>  ::= <character> <string_content> | epsilon
 <character>       ::= <digit> | <letter> | "_" | "." | "/" | etc.
@@ -25,6 +24,8 @@ delta:
     delta(q0, letter) = q1
     delta(q1, letter_or_digit) = q1
 
+======================================================================================================
+
 Number 0|[1-9][0-9]*
 
 Finite Automaton: M = (Q, Sigma, delta, q0, F)
@@ -37,6 +38,8 @@ delta:
     delta(q0, zero) = q1
     delta(q0, nonzero) = q2
     delta(q2, digit) = q2
+
+======================================================================================================
 
 String \"[^\"\n]*\"
 
