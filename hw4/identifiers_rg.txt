@@ -1,0 +1,9 @@
+=== FINITE AUTOMATON (FA) MODEL FOR identifiers ===
+States: ['q0', 'q1']
+Start State: q0
+Final States: ['q1']
+
+=== GENERATED REGULAR GRAMMAR (RG) PRODUCTIONS ===
+S -> letter A
+A -> letter_or_digit A
+A -> epsilon

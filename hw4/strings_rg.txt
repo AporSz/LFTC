@@ -1,0 +1,10 @@
+=== FINITE AUTOMATON (FA) MODEL FOR strings ===
+States: ['q0', 'q1', 'q2']
+Start State: q0
+Final States: ['q2']
+
+=== GENERATED REGULAR GRAMMAR (RG) PRODUCTIONS ===
+A -> second_quote B
+A -> character A
+S -> first_quote A
+B -> epsilon

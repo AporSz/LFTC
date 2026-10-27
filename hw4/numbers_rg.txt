@@ -1,0 +1,11 @@
+=== FINITE AUTOMATON (FA) MODEL FOR numbers ===
+States: ['q0', 'q1', 'q2']
+Start State: q0
+Final States: ['q1', 'q2']
+
+=== GENERATED REGULAR GRAMMAR (RG) PRODUCTIONS ===
+B -> digit B
+S -> nonzero B
+S -> zero A
+A -> epsilon
+B -> epsilon
