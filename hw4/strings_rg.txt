@@ -4,7 +4,7 @@ Start State: q0
 Final States: ['q2']
 
 === GENERATED REGULAR GRAMMAR (RG) PRODUCTIONS ===
-A -> second_quote B
 A -> character A
-S -> first_quote A
+A -> quote B
+S -> quote A
 B -> epsilon

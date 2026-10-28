@@ -68,9 +68,9 @@ strings = {
     "start_state": "q0",
     "final_states": ["q2"],
     "transitions": {
-        ("q0", "first_quote", "q1"),
+        ("q0", "quote", "q1"),
         ("q1", "character", "q1"),
-        ("q1", "second_quote", "q2"),
+        ("q1", "quote", "q2"),
     }
 }
 

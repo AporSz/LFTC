@@ -50,7 +50,7 @@ Sigma = { a-z, A-Z, 0-9, ", !, @, #, $, etc. (except for \n) }
 q0 = q0
 F = { q2 }
 delta:
-    delta(q0, first_quote) = q1
+    delta(q0, quote) = q1
     delta(q1, character) = q1
-    delta(q1, second_quote) = q2
+    delta(q1, quote) = q2
 

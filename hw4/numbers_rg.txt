@@ -4,8 +4,8 @@ Start State: q0
 Final States: ['q1', 'q2']
 
 === GENERATED REGULAR GRAMMAR (RG) PRODUCTIONS ===
-B -> digit B
-S -> nonzero B
 S -> zero A
+S -> nonzero B
+B -> digit B
 A -> epsilon
 B -> epsilon

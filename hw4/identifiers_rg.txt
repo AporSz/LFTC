@@ -4,6 +4,6 @@ Start State: q0
 Final States: ['q1']
 
 === GENERATED REGULAR GRAMMAR (RG) PRODUCTIONS ===
-S -> letter A
 A -> letter_or_digit A
+S -> letter A
 A -> epsilon
