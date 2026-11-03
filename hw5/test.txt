@@ -1,0 +1,13 @@
+image img[1080, 1920]
+load(img, "jpg.png")
+for row in img {
+    pixel p [0, 0, 0, 0]
+    p = row[0]
+    array a [row.size]
+    for i in a.size
+    {
+        a[i] = p
+    }
+    row = a
+}
+save(img, "png.jpg")
