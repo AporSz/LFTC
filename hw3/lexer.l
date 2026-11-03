@@ -15,9 +15,9 @@ logical_operator    "and"|"or"|"&&"|"||"
 number              0|[1-9][0-9]*
 id                  [a-zA-Z][0-9a-zA-Z]*
 string              \"[^\"\n]*\"
-reserved_word       ("image"|"array"|"pixel"|"load"|"save"|"if"|"else"|"for"|"in"|"function"|"return"|"void"|"size")
+reserved_word       ("image"|"array"|"pixel"|"load"|"save"|"if"|"else"|"for"|"in"|"function"|"return"|"void"|"size"|"and"|"or")
 assign              "="
-separator           [\(\)\[\],{}]
+separator           [\(\)\[\],.{}]
 size                ".size"
 
 %%
