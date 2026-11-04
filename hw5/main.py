@@ -8,14 +8,25 @@ SEPARATORS = {"[", "]", "{", "}", "(", ")", ",", "."}
 
 class SymbolTable:
     def __init__(self):
-        self.table = {}
+        self.buckets = [[] for _ in range(10)]
         self.counter = 0
 
     def insert(self, value):
-        if value not in self.table:
-            self.table[value] = self.counter
-            self.counter += 1
-        return self.table[value]
+        bucket = self.buckets[hash(value) % len(self.buckets)]
+        for lexeme, index in bucket:
+            if lexeme == value:
+                return index
+
+        index = self.counter
+        bucket.append((value, index))
+        self.counter += 1
+        return index
+
+    def items(self):
+        entries = []
+        for bucket in self.buckets:
+            entries.extend(bucket)
+        return entries
 
 
 def scan_identifier(text, start_index):
@@ -230,7 +241,7 @@ if __name__ == "__main__":
         print(f"Token: {token:<10} | ST Index: {idx}")
 
     print("\n=== SYMBOL TABLE (ST) ===")
-    for val, idx in sorted(st.table.items(), key=lambda x: x[1]):
+    for val, idx in sorted(st.items(), key=lambda x: x[1]):
         print(f"Index {idx}: {val}")
 
     if errors:
