@@ -1,0 +1,15 @@
+start
+var
+integer _b;
+integer _a;
+integer _i;
+end-var
+read(_a);
+_b=2;
+_i = 1;
+for _i : 0:_a do
+if(_i % _b == 0)
+write(_i);
+end-if
+end-for
+end

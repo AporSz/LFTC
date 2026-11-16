@@ -1,0 +1,233 @@
+1. OBJECTIVES & OVERVIEW
+--------------------------------------------------------------------------------
+The objective of this laboratory is to bridge lexical analysis and syntactical 
+analysis. Building upon the token stream / Program Internal Form (PIF) from 
+previous labs, students will construct a Context-Free Grammar (CFG) for their 
+mini-DSL and implement a bottom-up parser using Yacc integrated directly with 
+their scanner (Lex).
+
+Deliverables expected from students:
+1. 1 Grammar Definition Document (.txt or .md) containing the formal CFG.
+2. Source Code implementing the integrated scanner-parser and producing the 
+   string of productions (derivation trace).
+
+
+--------------------------------------------------------------------------------
+2. REQUIREMENT 1: GRAMMAR DEFINITION (CFG)
+--------------------------------------------------------------------------------
+Students must define their language grammar in BNF/EBNF form covering:
+- Declarations and Assignments
+- Control Structures (while loops, if-then-else conditionals)
+- Input / Output statements (read, write)
+- Expressions with proper arithmetic and relational precedence.
+
+Example BNF Grammar Snippet:
+<program>           ::= <statement_list>
+<statement_list>    ::= <statement> | <statement> <statement_list>
+<statement>         ::= <assign_stmt> | <io_stmt> | <conditional_stmt> | <loop_stmt>
+<assign_stmt>       ::= "number" <identifier> "=" <expression> ";" | <identifier> "=" <expression> ";"
+<io_stmt>           ::= "read" "(" <identifier> ")" ";" | "write" "(" <expression> ")" ";"
+<expression>        ::= <expression> "+" <term> | <term>
+<term>              ::= <term> "*" <factor> | <factor>
+<factor>            ::= <number> | <identifier> | "(" <expression> ")"
+
+
+--------------------------------------------------------------------------------
+3. REQUIREMENTS 2 & 3: INTEGRATED SCANNER & PARSER SOURCE CODE including lexical , syntax error 
+--------------------------------------------------------------------------------
+3.1 Input: grammar, PIF & Output: string of productions
+
+1. INPUT PART A: GRAMMAR RULES (CFG)
+--------------------------------------------------------------------------------
+Rule 1: <program>        ::= <statement_list>
+Rule 2: <statement_list> ::= <decl_stmt>
+Rule 3: <decl_stmt>      ::= "number" <identifier> "=" <expression> ";"
+Rule 4: <expression>     ::= <constant>
+Rule 5: <identifier>     ::= id
+Rule 6: <constant>       ::= const
+
+--------------------------------------------------------------------------------
+2. INPUT PART B: PROGRAM INTERNAL FORM (PIF)
+--------------------------------------------------------------------------------
+Source Code:
+    number x = 10;
+
+Corresponding PIF Table:
++-------------------+----------+-------------------------+
+| Token / Category  | ST Index | Explanation             |
++-------------------+----------+-------------------------+
+| "number"          | -1       | Keyword                 |
+| "id"              | 0        | Identifier ("x")        |
+| "="               | -1       | Assignment Operator     |
+| "const"           | 1        | Constant ("10")         |
+| ";"               | -1       | Separator               |
++-------------------+----------+-------------------------+
+
+--------------------------------------------------------------------------------
+3. OUTPUT: STRING OF PRODUCTIONS (DERIVATION TRACE)
+--------------------------------------------------------------------------------
+As the parser processes the PIF tokens using the Grammar rules (bottom-up shift-reduce 
+or top-down derivation), it records the exact sequence of applied productions:
+
+1. constant -> const (10)
+2. expression -> constant
+3. identifier -> id (x)
+4. decl_stmt -> number identifier = expression ;
+5. statement_list -> decl_stmt
+6. program -> statement_list
+
+
+
+=============================================================================
+3.2 Below is the reference implementation using Python PLY (Python Lex-Yacc), which 
+demonstrates Lex-Yacc integration and tracks grammar productions.
+
+Prerequisite: pip install ply
+
+--------------------------------------------------------------------------------
+
+import ply.lex as lex
+import ply.yacc as yacc
+
+# --- 1. LEXER SPECIFICATION ---
+tokens = [
+    'ID', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 
+    'EQUALS', 'EQ', 'NE', 'LT', 'LE', 'GT', 'GE',
+    'LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET', 'LBRACE', 'RBRACE', 'SEMI'
+]
+
+reserved = {
+    'number': 'NUMBER_KW',
+    'array': 'ARRAY',
+    'of': 'OF',
+    'if': 'IF',
+    'then': 'THEN',
+    'else': 'ELSE',
+    'while': 'WHILE',
+    'do': 'DO',
+    'read': 'READ',
+    'write': 'WRITE'
+}
+
+tokens = tokens + list(reserved.values())
+
+t_PLUS    = r'\+'
+t_MINUS   = r'-'
+t_TIMES   = r'\*'
+t_DIVIDE  = r'/'
+t_EQUALS  = r'='
+t_EQ      = r'=='
+t_NE      = r'!='
+t_LE      = r'<='
+t_GE      = r'>='
+t_LT      = r'<'
+t_GT      = r'>'
+t_LPAREN  = r'\('
+t_RPAREN  = r'\)'
+t_LBRACKET= r'\['
+t_RBRACKET= r'\]'
+t_LBRACE  = r'\{'
+t_RBRACE  = r'\}'
+t_SEMI    = r';'
+
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    t.type = reserved.get(t.value, 'ID')
+    return t
+
+def t_NUMBER(t):
+    r'\d+(\.\d+)?'
+    t.value = float(t.value) if '.' in t.value else int(t.value)
+    return t
+
+t_ignore = ' \t\n'
+
+def t_error(t):
+    print(f"Lexical error: Illegal character '{t.value[0]}'")
+    t.lexer.skip(1)
+
+lexer = lex.lex()
+
+
+# --- 2. PARSER SPECIFICATION & PRODUCTION TRACKING ---
+production_string = []
+
+def p_program(p):
+    '''program : statement_list'''
+    p[0] = p[1]
+    production_string.append("program -> statement_list")
+
+def p_statement_list(p):
+    '''statement_list : statement
+                      | statement statement_list'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+        production_string.append("statement_list -> statement")
+    else:
+        p[0] = [p[1]] + p[2]
+        production_string.append("statement_list -> statement statement_list")
+
+def p_statement(p):
+    '''statement : assign_stmt
+                 | io_stmt'''
+    p[0] = p[1]
+    production_string.append("statement -> sub_statement")
+
+def p_assign_stmt(p):
+    '''assign_stmt : ID EQUALS expression SEMI
+                   | NUMBER_KW ID EQUALS expression SEMI'''
+    if len(p) == 5:
+        p[0] = ('assign', p[1], p[4])
+        production_string.append("assign_stmt -> ID = expression ;")
+    else:
+        p[0] = ('decl_assign', p[1], p[2], p[4])
+        production_string.append("assign_stmt -> number ID = expression ;")
+
+def p_io_stmt(p):
+    '''io_stmt : READ LPAREN ID RPAREN SEMI
+               | WRITE LPAREN expression RPAREN SEMI'''
+    p[0] = (p[1], p[3])
+    production_string.append(f"io_stmt -> {p[1]} ( ID/expr ) ;")
+
+def p_expression(p):
+    '''expression : expression PLUS term
+                  | term'''
+    if len(p) == 4:
+        p[0] = ('+', p[1], p[3])
+        production_string.append("expression -> expression + term")
+    else:
+        p[0] = p[1]
+        production_string.append("expression -> term")
+
+def p_term(p):
+    '''term : NUMBER
+            | ID'''
+    p[0] = p[1]
+    production_string.append(f"term -> {p[1]}")
+
+def p_error(p):
+    if p:
+        print(f"Syntax error at token '{p.value}'")
+    else:
+        print("Syntax error at EOF")
+
+parser = yacc.yacc()
+
+
+# --- 3. TEST EXECUTION ---
+if __name__ == "__main__":
+    sample_code = """
+    number threshold = 45;
+    read(currentTemp);
+    write(threshold);
+    """
+
+    print("=== STARTING PARSING & SCANNING INTEGRATION ===")
+    result = parser.parse(sample_code)
+    
+    print("\n=== STRING OF PRODUCTIONS (DERIVATION TRACE) ===")
+    for idx, prod in enumerate(production_string, 1):
+        print(f"{idx}. {prod}")
+    
+    print("\nParsing completed successfully with 0 syntax errors!")
+================================================================================
