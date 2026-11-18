@@ -1,3 +1,4 @@
+import argparse
 import csv
 from pathlib import Path
 
@@ -487,13 +488,27 @@ parser = yacc.yacc(start='program', debug=False, write_tables=False)
 
 # --- 3. TEST EXECUTION ---
 if __name__ == "__main__":
-    pif_path = Path(__file__).with_name("PIF.csv")
-    st_path = Path(__file__).with_name("ST.csv")
-    pif_lexer = PIFLexer(pif_path, st_path)
+    argument_parser = argparse.ArgumentParser(description="Parse DSL source.")
+    argument_parser.add_argument(
+        "--mode",
+        choices=("pif", "source"),
+        default="pif",
+        help="read tokens from PIF.csv/ST.csv or tokenize source with PLY (default: pif)",
+    )
+    args = argument_parser.parse_args()
 
-    print("=== STARTING PARSING FROM PIF.csv ===")
     production_string.clear()
-    result = parser.parse(lexer=pif_lexer)
+    if args.mode == "pif":
+        pif_path = Path(__file__).with_name("PIF.csv")
+        st_path = Path(__file__).with_name("ST.csv")
+        input_lexer = PIFLexer(pif_path, st_path)
+        print("=== STARTING PARSING FROM PIF.csv AND ST.csv ===")
+        result = parser.parse(lexer=input_lexer)
+    else:
+        source_path = Path(__file__).with_name("sample_code.txt")
+        source_code = source_path.read_text(encoding="utf-8")
+        print(f"=== STARTING PARSING FROM {source_path.name} WITH PLY LEX ===")
+        result = parser.parse(source_code, lexer=lexer)
 
     print("\n=== STRING OF PRODUCTIONS (DERIVATION TRACE) ===")
     for idx, prod in enumerate(production_string, 1):

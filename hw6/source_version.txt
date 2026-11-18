@@ -1,0 +1,103 @@
+=== STARTING PARSING FROM sample_code.txt WITH PLY LEX ===
+
+=== STRING OF PRODUCTIONS (DERIVATION TRACE) ===
+1. factor -> NUMBER
+2. term -> factor
+3. arithmetic_expression -> term
+4. index -> arithmetic_expression
+5. factor -> NUMBER
+6. term -> factor
+7. arithmetic_expression -> term
+8. index -> arithmetic_expression
+9. init -> IMAGE ID [ index , index ]
+10. statement -> init
+11. load -> LOAD ( ID , STRING )
+12. statement -> load
+13. factor -> ID
+14. term -> factor
+15. arithmetic_expression -> term
+16. index -> arithmetic_expression
+17. factor -> NUMBER
+18. term -> factor
+19. arithmetic_expression -> term
+20. index -> arithmetic_expression
+21. factor -> NUMBER
+22. term -> factor
+23. arithmetic_expression -> term
+24. index -> arithmetic_expression
+25. factor -> NUMBER
+26. term -> factor
+27. arithmetic_expression -> term
+28. index -> arithmetic_expression
+29. factor -> NUMBER
+30. term -> factor
+31. arithmetic_expression -> term
+32. index -> arithmetic_expression
+33. init -> PIXEL ID [ index, index, index, index ]
+34. statement -> init
+35. factor -> NUMBER
+36. term -> factor
+37. arithmetic_expression -> term
+38. index -> arithmetic_expression
+39. factor -> ID [ index ]
+40. term -> factor
+41. arithmetic_expression -> term
+42. comparison_expression -> arithmetic_expression
+43. logical_expression_base -> comparison_expression
+44. logical_expression_tail -> epsilon
+45. logical_expression -> logical_expression_base logical_expression_tail
+46. expression -> logical_expression
+47. assign -> ID = expression
+48. statement -> assign
+49. size -> ID . SIZE
+50. index -> size
+51. init -> ARRAY ID [ index ]
+52. statement -> init
+53. size -> ID . SIZE
+54. index -> size
+55. factor -> ID
+56. term -> factor
+57. arithmetic_expression -> term
+58. index -> arithmetic_expression
+59. factor -> ID
+60. term -> factor
+61. arithmetic_expression -> term
+62. comparison_expression -> arithmetic_expression
+63. logical_expression_base -> comparison_expression
+64. logical_expression_tail -> epsilon
+65. logical_expression -> logical_expression_base logical_expression_tail
+66. expression -> logical_expression
+67. assign -> ID [ index ] = expression
+68. statement -> assign
+69. statements -> epsilon
+70. statements -> statement statements
+71. for -> FOR ID IN index { statements }
+72. statement -> for_stmt
+73. factor -> ID
+74. term -> factor
+75. arithmetic_expression -> term
+76. comparison_expression -> arithmetic_expression
+77. logical_expression_base -> comparison_expression
+78. logical_expression_tail -> epsilon
+79. logical_expression -> logical_expression_base logical_expression_tail
+80. expression -> logical_expression
+81. assign -> ID = expression
+82. statement -> assign
+83. statements -> epsilon
+84. statements -> statement statements
+85. statements -> statement statements
+86. statements -> statement statements
+87. statements -> statement statements
+88. statements -> statement statements
+89. for -> FOR ID IN index { statements }
+90. statement -> for_stmt
+91. save -> SAVE ( ID , STRING )
+92. statement -> save
+93. statements -> epsilon
+94. statements -> statement statements
+95. statements -> statement statements
+96. statements -> statement statements
+97. statements -> statement statements
+98. program -> statements
+
+Parsing completed successfully.
