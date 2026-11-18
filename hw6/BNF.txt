@@ -118,3 +118,21 @@ Unused Definition
 -----------------
 
 <operator> ::= "+" | "-" | "*" | "/"
+
+Yacc Parser Build and Run
+-------------------------
+
+The parser is implemented in parser.y and the Flex scanner is in lexer.l.
+Build the executable from this directory with:
+
+    yacc -d -o y.tab.c parser.y
+    flex -o lex.yy.c lexer.l
+    gcc -o hw6_parser y.tab.c lex.yy.c
+
+Parse the PIF and symbol table, or tokenize source directly with Flex:
+
+    ./hw6_parser --pif PIF.csv ST.csv
+    ./hw6_parser --source sample_code.txt
+
+The main.py runner performs these build steps in a temporary directory.
+Use --mode pif or --mode source to choose the input mode.
