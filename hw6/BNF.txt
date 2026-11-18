@@ -1,0 +1,120 @@
+IoT-Script BNF
+==============
+
+Syntactic Definitions
+---------------------
+
+Program Structure
+~~~~~~~~~~~~~~~~~
+
+<program>       ::= <statements>
+<statements>    ::= <statement> <statements> | epsilon
+<statement>     ::= <init> | <load> | <assign> | <save>
+                  | <if> | <for> | <function>
+
+Declarations and I/O
+~~~~~~~~~~~~~~~~~~~~
+
+<init>          ::= "image" <id> "[" <index> "," <index> "]"
+                  | "array" <id> "[" <index> "]"
+                  | "pixel" <id> "[" <index> "," <index> "," <index> "," <index> "]"
+                  | "pixel" <id> "[" <index> "," <index> "," <index> "]"
+
+<load>          ::= "load" "(" <id> "," <string> ")"
+<save>          ::= "save" "(" <id> "," <string> ")"
+
+Assignments and Control Flow
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<assign>        ::= <id> "=" <expression>
+                  | <id> "[" <index> "]" "=" <expression>
+                  | <id> "[" <index> "]" "[" <index> "]" "=" <expression>
+
+<if>            ::= "if" <logical_expression> "{" <statements> "}" "else" "{" <statements> "}"
+                  | "if" <logical_expression> "{" <statements> "}"
+<for>           ::= "for" <id> "in" <index> "{" <statements> "}"
+
+Expressions
+~~~~~~~~~~~
+
+<expression>             ::= <logical_expression>
+
+<arithmetic_expression>   ::= <arithmetic_expression> <additive_operator> <term>
+                            | <term>
+<term>                    ::= <term> <multiplicative_operator> <factor>
+                            | <factor>
+<factor>                  ::= <id> | <number> | <function_call>
+                            | <id> "[" <index> "]"
+                            | <id> "[" <index> "]" "[" <index> "]"
+                            | "(" <arithmetic_expression> ")"
+
+<logical_expression>      ::= <logical_expression_base> <logical_expression_tail>
+<logical_expression_base> ::= <comparison_expression>
+<logical_expression_tail> ::= <logical_op> <logical_expression_base> <logical_expression_tail>
+                            | epsilon
+<comparison_expression>   ::= <arithmetic_expression> <comp_op> <arithmetic_expression>
+                            | <arithmetic_expression>
+
+Indexes
+~~~~~~~
+
+<index>         ::= <size> | <arithmetic_expression>
+<size>          ::= <id> ".size"
+
+Functions and Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+<function_call> ::= <identifier> "(" <arguments_opt> ")"
+<arguments_opt> ::= <arguments> | epsilon
+<arguments>     ::= <expression> <arguments_tail>
+<arguments_tail> ::= "," <expression> <arguments_tail> | epsilon
+
+<function>      ::= "function" <identifier> "(" <parameter_opt> ")"
+                    "{" <statements> <return_opt> "}"
+<return_opt>    ::= <return> | epsilon
+<return>        ::= "return" <expression>
+                  | "return" "void"
+
+<parameter_opt> ::= <parameters> | epsilon
+<parameters>    ::= <parameter> <parameter_tail>
+<parameter_tail> ::= "," <parameter> <parameter_tail> | epsilon
+<parameter>     ::= <identifier>
+
+Lexical Definitions
+-------------------
+
+Identifiers
+~~~~~~~~~~~
+
+<identifier> ::= <letter> <ident_rest>
+<ident_rest> ::= <letter> <ident_rest> | <digit> <ident_rest> | epsilon
+<id>         ::= <identifier>
+<letter>     ::= "a" | "b" | … | "z" | "A" | "B" | … | "Z"
+
+Operators
+~~~~~~~~~
+
+<additive_operator>       ::= "+" | "-"
+<multiplicative_operator> ::= "*" | "/"
+<comp_op>                 ::= "==" | "!=" | "<" | "<=" | ">" | ">="
+<logical_op>              ::= "and" | "or" | "&&" | "||"
+
+Strings
+~~~~~~~
+
+<string>         ::= """ <string_content> """
+<string_content> ::= <character> <string_content> | epsilon
+<character>      ::= <digit> | <letter> | "_" | "." | "/" | etc.
+
+Numbers
+~~~~~~~
+
+<number>        ::= "0" | <nonzero_digit> <digits_opt>
+<digits_opt>    ::= <digit> <digits_opt> | epsilon
+<nonzero_digit> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<digit>         ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+Unused Definition
+-----------------
+
+<operator> ::= "+" | "-" | "*" | "/"
